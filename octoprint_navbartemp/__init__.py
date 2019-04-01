@@ -13,15 +13,13 @@ import re
 from .libs.sbc import SBCFactory
 
 
-class NavBarPlugin(octoprint.plugin.StartupPlugin,
-                   octoprint.plugin.TemplatePlugin,
-                   octoprint.plugin.AssetPlugin,
-                   octoprint.plugin.SettingsPlugin):
+class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlugin, octoprint.plugin.AssetPlugin, octoprint.plugin.SettingsPlugin):
 
     def __init__(self):
-        self.piSocTypes = (["BCM2708", "BCM2709",
-                            "BCM2835"])  # Array of raspberry pi SoC's to check against, saves having a large if/then statement later
-        self.debugMode = False  # to simulate temp on Win/Mac
+        # Array of raspberry pi SoC's to check against, saves having a large if/then statement later
+        self.piSocTypes = (["BCM2708", "BCM2709", "BCM2835"])
+        # to simulate temp on Win/Mac
+        self.debugMode = False
         self.displayRaspiTemp = True
         self._checkTempTimer = None
         self.sbc = None
@@ -33,16 +31,15 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin,
 
         if sys.platform == "linux2":
             self.sbc = SBCFactory().factory(self._logger)
-
             if self.sbc.is_supported and self.displayRaspiTemp:
                 self._logger.debug("Let's start RepeatedTimer!")
                 self.startTimer(30.0)
+
         # debug mode doesn't work if the OS is linux on a regular pc
         try:
             self._logger.debug("is supported? - %s" % self.sbc.is_supported)
         except:
             self._logger.debug("Embeded platform is not detected")
-
 
     def startTimer(self, interval):
         self._checkTempTimer = RepeatedTimer(interval, self.updateSoCTemp, None, None, True)
@@ -51,14 +48,12 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin,
     def updateSoCTemp(self):
         temp = self.sbc.checkSoCTemp()
         self._logger.debug("match: %s" % temp)
-        self._plugin_manager.send_plugin_message(self._identifier,
-                                                 dict(isSupported=self.sbc.is_supported,
-                                                      soctemp=temp))
+        self._plugin_manager.send_plugin_message(self._identifier, dict(isSupported=self.sbc.is_supported, soctemp=temp))
 
-    ##~~ SettingsPlugin
+
+    # SettingsPlugin
     def get_settings_defaults(self):
-        return dict(displayRaspiTemp=self.displayRaspiTemp,
-                    piSocTypes=self.piSocTypes)
+        return dict(displayRaspiTemp=self.displayRaspiTemp, piSocTypes=self.piSocTypes)
 
     def on_settings_save(self, data):
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
@@ -76,7 +71,8 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin,
                     pass
             self._plugin_manager.send_plugin_message(self._identifier, dict())
 
-    ##~~ TemplatePlugin API
+
+    # TemplatePlugin API
     def get_template_configs(self):
         try:
             if self.sbc.is_supported:
@@ -88,7 +84,8 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin,
         except:
             return []
 
-    ##~~ AssetPlugin API
+
+    # AssetPlugin API
     def get_assets(self):
         return {
             "js": ["js/navbartemp.js"],
@@ -96,10 +93,10 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin,
             "less": ["less/navbartemp.less"]
         }
 
-    ##~~ Softwareupdate hook
+
+    # Softwareupdate hook
     def get_update_information(self):
         return dict(
-
             navbartemp=dict(
                 displayName="Navbar Temperature Plugin",
                 displayVersion=self._plugin_version,

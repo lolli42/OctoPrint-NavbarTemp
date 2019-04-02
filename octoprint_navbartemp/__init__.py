@@ -42,7 +42,7 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlug
             self.sbc = SBCFactory().factory(self._logger)
             if self.sbc.is_supported and self.displayRaspiTemp:
                 self._logger.debug("Let's start RepeatedTimer!")
-                self.startTimer(30.0)
+                self.startTimer(10.0)
 
         # debug mode doesn't work if the OS is linux on a regular pc
         try:
@@ -84,7 +84,7 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlug
         self.displayRaspiTemp = self._settings.get(["displayRaspiTemp"])
 
         if self.displayRaspiTemp:
-            interval = 5.0 if self.debugMode else 30.0
+            interval = 5.0 if self.debugMode else 10.0
             self.startTimer(interval)
         else:
             if self._checkTempTimer is not None:

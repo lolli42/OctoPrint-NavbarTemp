@@ -9,8 +9,10 @@ import octoprint.plugin
 from octoprint.util import RepeatedTimer
 import sys
 import re
+import RPi.GPIO as GPIO
 
 from .libs.sbc import SBCFactory
+from .libs.dht11 import dht11
 
 
 class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlugin, octoprint.plugin.AssetPlugin, octoprint.plugin.SettingsPlugin):
@@ -23,6 +25,13 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlug
         self.displayRaspiTemp = True
         self._checkTempTimer = None
         self.sbc = None
+
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)
+        # read data using pin 7, GPIO4
+        self.dht11 = dht11.DHT11(pin=7)
+        self.roomTemp = 0
+        self.roomHumidity = 0
 
     def on_after_startup(self):
         self.displayRaspiTemp = self._settings.get(["displayRaspiTemp"])
@@ -47,8 +56,22 @@ class NavBarPlugin(octoprint.plugin.StartupPlugin, octoprint.plugin.TemplatePlug
 
     def updateSoCTemp(self):
         temp = self.sbc.checkSoCTemp()
+        dhtResult = self.dht11.read()
+        if dhtResult.is_valid():
+            # Only update values if a valid result exists
+            self.roomTemp = dhtResult.temperature
+            self.roomHumidity = dhtResult.humidity
+
         self._logger.debug("match: %s" % temp)
-        self._plugin_manager.send_plugin_message(self._identifier, dict(isSupported=self.sbc.is_supported, soctemp=temp))
+        self._plugin_manager.send_plugin_message(
+            self._identifier,
+            dict(
+                isSupported=self.sbc.is_supported,
+                soctemp=temp,
+                roomtemp=self.roomTemp,
+                roomhumidity=self.roomHumidity
+            )
+        )
 
 
     # SettingsPlugin

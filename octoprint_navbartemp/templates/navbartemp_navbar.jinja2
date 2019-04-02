@@ -1,7 +1,9 @@
 <div class="navbar-text" data-bind="visible: temperatureModel.isOperational()">
-    <span id="socInfo" data-bind="attr: { title: 'System On Chip Temperature' }, html: socTemp,visible: hasSoc"></span>
+    <span id="roomHumidity" data-bind="attr: { title: 'Room Humidity' }, html: roomHumidity"></span>
+    <span id="roomTemp" data-bind="attr: { title: 'Room Temperature' }, html: roomTemp"></span>
+    <span id="socInfo" data-bind="attr: { title: 'System On Chip Temperature' }, html: socTemp, visible: hasSoc"></span>
     <!-- ko foreach: temperatureModel.tools() -->
-        <span id="toolInfo" data-bind="attr: { title: name() },html: $parent.formatBarTemperature(name(),  actual(), target())"></span>
+        <span id="toolInfo" data-bind="attr: { title: name() },html: $parent.formatBarTemperature(name(), actual(), target())"></span>
     <!-- /ko -->
     <span id="bedInfo" data-bind="attr: { title: 'Bed' }, html: formatBarTemperature(temperatureModel.bedTemp.name(), temperatureModel.bedTemp.actual(), temperatureModel.bedTemp.target()), visible: temperatureModel.hasBed"></span>
 </div>

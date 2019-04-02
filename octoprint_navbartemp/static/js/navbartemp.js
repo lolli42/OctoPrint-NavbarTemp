@@ -5,7 +5,9 @@ $(function() {
         self.temperatureModel = parameters[0];
         self.global_settings = parameters[1];
         self.socTemp = ko.observable(null);
-        /* 
+        self.roomTemp = ko.observable(null);
+        self.roomHumidity = ko.observable(null);
+        /*
          * raspi and awinner should be combined into something like hasSoc in the python
          * source, there's no need for this part to know or care what the sbc is made of
          * 
@@ -38,6 +40,8 @@ $(function() {
             else {
                 self.isSupported(data.isSupported);
                 self.socTemp(_.sprintf("SoC: %.1f&deg;C", data.soctemp));
+                self.roomTemp(_.sprintf("Room: %.1f&deg;C", data.roomtemp));
+                self.roomHumidity(_.sprintf("Humidity: %.1f&percnt;", data.roomhumidity));
             }
         };
     }

@@ -41,7 +41,7 @@ $(function() {
                 self.isSupported(data.isSupported);
                 self.socTemp(_.sprintf("SoC: %.1f&deg;C", data.soctemp));
                 self.roomTemp(_.sprintf("Room: %.1f&deg;C", data.roomtemp));
-                self.roomHumidity(_.sprintf("Humidity: %.1f&percnt;", data.roomhumidity));
+                self.roomHumidity(_.sprintf("Hum: %.1f&percnt;", data.roomhumidity));
             }
         };
     }
